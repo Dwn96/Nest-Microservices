@@ -31,6 +31,24 @@ export class ProductsController {
     return await this.productsService.checkBulkAvailability(productIds);
   }
 
+  @MessagePattern('updateInventory')
+  async updateInventory(@Payload() updateInventoryData: UpdateProductDto ) {
+    console.log(updateInventoryData)
+    const {productId, ...rest } = updateInventoryData
+    console.log(rest)
+    const updatedProduct =  await this.productsService.updateInventory(productId, rest);
+    if (updatedProduct) {
+      return {
+        ...updatedProduct,
+        status: HttpStatus.OK
+      }
+    }
+    return {
+      status: HttpStatus.NOT_FOUND,
+      message: `Product ID ${productId} does not exist`
+    }
+  }
+
   @MessagePattern('createInventory')
   async createInventory(@Payload() product: CreateProductDto) {
     return await this.productsService.createProduct(product);

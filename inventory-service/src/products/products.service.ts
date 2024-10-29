@@ -27,4 +27,9 @@ export class ProductsService {
       select: ['id', 'stockQuantity']
     })
   }
+
+  async updateInventory(productId:string, updateInventoryDto: UpdateProductDto) {
+    await this.productRepository.update({id:productId}, (updateInventoryDto as any).updateInventoryDto)
+    return this.getProductAvailability(productId)
+  }
 }

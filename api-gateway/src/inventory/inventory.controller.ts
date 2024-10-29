@@ -29,7 +29,13 @@ export class InventoryController {
         @Param('productId') productId: string,
         @Body() updateInventoryDto: UpdateInventoryDto,
     ) {
-        return await this.inventoryService.updateInventory(productId, updateInventoryDto);
+        const response =  await this.inventoryService.updateInventory(productId, updateInventoryDto);
+        if(response.status !== HttpStatus.OK) {
+            throw new HttpException({
+                message: response.message,
+            }, response.status)
+        }
+        return response
     }
 
     @Post()
