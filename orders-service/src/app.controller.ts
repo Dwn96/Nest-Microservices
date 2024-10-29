@@ -12,8 +12,8 @@ export class AppController {
   }
 
   @EventPattern('user_created')
-  handleUserCreated(data): string {
+  handleUserCreated(data, ctx) {
     console.log('Here' )
-    return this.appService.handleUserCreated(data);
+    return this.appService.handleUserCreated(data, ctx);
   }
 }

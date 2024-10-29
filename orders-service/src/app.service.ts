@@ -6,8 +6,11 @@ export class AppService {
     return 'Hello World!';
   }
 
-  handleUserCreated(user): string {
-    console.log(user)
-    return 'Done'
+  handleUserCreated(user, ctx) {
+    console.log(user, ctx)
+    return {
+      success: true,
+      well: 'received'
+    }
   }
 }

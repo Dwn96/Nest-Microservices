@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class AppService {
@@ -10,12 +11,12 @@ export class AppService {
   getHello(): string {
     return 'Hello World!';
   }
-  createUser(): string {
-    this.orderClient.emit(
+  async createUser() {
+    const response = await firstValueFrom(this.orderClient.send(
       'user_created', 
       {done: true}
-    )
+    ))
 
-    return 'User Created'
+    return response
   }
 }
