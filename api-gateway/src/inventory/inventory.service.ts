@@ -19,7 +19,7 @@ export class InventoryService {
     async checkBulkAvailability(checkAvailabilityDto: CheckAvailabilityDto): Promise<any> {
         const productAvailability = await firstValueFrom(this.inventoryClient.send(
             'checkBulkAvailability',
-            { checkAvailabilityDto }
+            checkAvailabilityDto.productIds
         ))
         return productAvailability;
     }

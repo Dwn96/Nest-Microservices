@@ -26,6 +26,11 @@ export class ProductsController {
     }
   }
 
+  @MessagePattern('checkBulkAvailability')
+  async checkBulkAvailability(@Payload() productIds: string[]) {
+    return await this.productsService.checkBulkAvailability(productIds);
+  }
+
   @MessagePattern('createInventory')
   async createInventory(@Payload() product: CreateProductDto) {
     return await this.productsService.createProduct(product);

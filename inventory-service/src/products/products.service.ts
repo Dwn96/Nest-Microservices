@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
@@ -17,5 +17,14 @@ export class ProductsService {
 
   async createProduct(product: CreateProductDto) {
     return await this.productRepository.save(product)
+  }
+
+  async checkBulkAvailability(productIds: string[]) {
+    return await this.productRepository.find({
+      where: {
+        id: In(productIds)
+      },
+      select: ['id', 'stockQuantity']
+    })
   }
 }
