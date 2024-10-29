@@ -1,6 +1,6 @@
 import { IsString, IsNumber, IsInt, IsOptional, IsUrl, MaxLength, Min } from 'class-validator';
 
-export class CreateProductDto {
+export class CreateInventoryDto {
     @IsString()
     @MaxLength(100)
     name: string;

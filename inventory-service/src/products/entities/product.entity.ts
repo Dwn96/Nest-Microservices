@@ -24,14 +24,14 @@ export class Product {
     stockQuantity: number;
 
     @Column({ nullable: true })
-    imageUrl: string; // Optional field for product image
+    imageUrl: string;
 
     @Column({ type: 'boolean', default: true })
-    isActive: boolean; // Indicates if the product is available for sale
+    isActive: boolean;
 
     @CreateDateColumn()
-    createdOn: Date; // Automatically set when a product is created
+    createdOn: Date;
 
     @UpdateDateColumn()
-    updatedOn: Date; // Automatically set when a product is updated
+    updatedOn: Date;
 }

@@ -10,6 +10,12 @@ export class ProductsService {
   constructor(@InjectRepository(Product) private productRepository: Repository<Product>) {}
   
   async getProductAvailability(productId: string) {
-    return await this.productRepository.findOneBy({id: productId})
+    return await this.productRepository.findOne({where: {
+      id: productId
+    }})
+  }
+
+  async createProduct(product: CreateProductDto) {
+    return await this.productRepository.save(product)
   }
 }

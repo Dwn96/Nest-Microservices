@@ -3,25 +3,17 @@ import { CheckAvailabilityDto } from './dto/check-availability.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { CreateInventoryDto } from './dto/create-inventory.dto';
 
 @Injectable()
 export class InventoryService {
     constructor(@Inject('INVENTORY') private readonly inventoryClient: ClientProxy) { }
     async getProductAvailability(productId: string): Promise<any> {
-        try {
-            const productAvailability = await firstValueFrom(this.inventoryClient.send(
-                'getProductAvailability',
-                productId
-            ))
-            return productAvailability;
-        }
-        catch (error) {
-            if (error.message === 'no elements in sequence') {
-                throw new NotFoundException(`Product with ID ${productId} not found`);
-            }
-            // Re-throw any unexpected errors
-            throw error;
-        }
+        const productAvailability = await firstValueFrom(this.inventoryClient.send(
+            'getProductAvailability',
+            productId
+        ))
+        return productAvailability;
     }
 
     async checkBulkAvailability(checkAvailabilityDto: CheckAvailabilityDto): Promise<any> {
@@ -36,6 +28,14 @@ export class InventoryService {
         const inventory = await firstValueFrom(this.inventoryClient.send(
             'checkBulkAvailability',
             { productId, updateInventoryDto }
+        ))
+        return inventory;
+    }
+
+    async createInventory(product: CreateInventoryDto): Promise<any> {
+        const inventory = await firstValueFrom(this.inventoryClient.send(
+            'createInventory',
+            product
         ))
         return inventory;
     }
