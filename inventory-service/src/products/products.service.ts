@@ -29,7 +29,7 @@ export class ProductsService {
   }
 
   async updateInventory(productId:string, updateInventoryDto: UpdateProductDto) {
-    await this.productRepository.update({id:productId}, (updateInventoryDto as any).updateInventoryDto)
+    await this.productRepository.update({id:productId}, updateInventoryDto)
     return this.getProductAvailability(productId)
   }
 }

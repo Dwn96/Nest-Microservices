@@ -27,7 +27,7 @@ export class InventoryService {
     async updateInventory(productId: string, updateInventoryDto: UpdateInventoryDto): Promise<any> {
         const inventory = await firstValueFrom(this.inventoryClient.send(
             'updateInventory',
-            { productId, updateInventoryDto }
+            { productId, ...updateInventoryDto }
         ))
         return inventory;
     }
