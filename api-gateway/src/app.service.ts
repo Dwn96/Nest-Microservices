@@ -19,6 +19,4 @@ export class AppService {
 
     return response
   }
-
-  async getInventoryById(productId: number) {}
 }
