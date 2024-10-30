@@ -45,5 +45,18 @@ export class OrdersService {
     await this.orderRepository.update({id}, {status: updateOrderDto.status})
     return await this.findOne(id)
   }
+
+  calculateTotalQuantities(orderItems: { productId: string; quantity: number }[], productId: string): number {
+    let totalQuantity = 0;
+
+    for (const item of orderItems) {
+        if (item.productId === productId) {
+            totalQuantity += item.quantity;
+        }
+    }
+
+    return totalQuantity;
+}
+
  
 }

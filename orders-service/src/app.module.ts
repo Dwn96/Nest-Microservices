@@ -6,6 +6,7 @@ import { CustomersModule } from './customers/customers.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 
 @Module({
@@ -18,7 +19,8 @@ import * as Joi from 'joi';
       DB_PASSWORD: Joi.string().required().allow(null, ''),
       DB_NAME: Joi.string().required(),
     }),
-  }), DatabaseModule, OrdersModule, CustomersModule, DatabaseModule],
+  }),
+    DatabaseModule, OrdersModule, CustomersModule, DatabaseModule],
   controllers: [AppController],
   providers: [AppService],
 })

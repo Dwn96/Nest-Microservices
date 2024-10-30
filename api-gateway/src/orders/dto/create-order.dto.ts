@@ -1,5 +1,6 @@
-import { IsString, IsArray, IsNumber, IsEmail, Min, ValidateNested, IsObject } from 'class-validator';
+import { IsString, IsArray, IsNumber, IsEmail, Min, ValidateNested, IsObject, IsEnum, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
+import { OrderStatus } from './update-order-status.dto';
 
 class OrderItem {
     @IsString()
@@ -23,6 +24,7 @@ class Customer {
 
     @IsString()
     shippingAddress: string;
+
 }
 
 export class CreateOrderDto {
@@ -38,5 +40,10 @@ export class CreateOrderDto {
 
     @IsNumber()
     @Min(1)
+    @IsOptional()
     totalAmount: number;
+
+    @IsEnum(OrderStatus)
+    @IsOptional()
+    status: OrderStatus;
 }

@@ -4,13 +4,14 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { EntityNotFoundError } from 'typeorm';
+import { BulkCheckProductAvailabilities } from './dto/bulk-check-availability.dto';
 
 @Controller()
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
   @MessagePattern('getProductAvailability')
-  async getProductAvailability(@Payload() productId: string) {
+  async getProductAvailability(@Payload() productId: number) {
     const product = await this.productsService.getProductAvailability(productId);
     if (product) {
       const { id, stockQuantity } = product
@@ -27,8 +28,10 @@ export class ProductsController {
   }
 
   @MessagePattern('checkBulkAvailability')
-  async checkBulkAvailability(@Payload() productIds: string[]) {
-    return await this.productsService.checkBulkAvailability(productIds);
+  async checkBulkAvailability(@Payload() bulkCheckProductAvailabilities: BulkCheckProductAvailabilities) {
+    console.log('kk');
+     
+    return await this.productsService.checkBulkAvailability(bulkCheckProductAvailabilities);
   }
 
   @MessagePattern('updateInventory')
@@ -51,5 +54,11 @@ export class ProductsController {
   @MessagePattern('createInventory')
   async createInventory(@Payload() product: CreateProductDto) {
     return await this.productsService.createProduct(product);
+  }
+
+  @MessagePattern('bulkUpdateInventory')
+  async bulkUpdateInventory(@Payload() update: UpdateProductDto[]) {
+    console.log(update)
+    return await this.productsService.bulkUpdateInventory(update)
   }
 }

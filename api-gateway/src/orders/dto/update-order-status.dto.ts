@@ -1,5 +1,5 @@
 import { IsEnum } from 'class-validator';
-enum OrderStatus {
+export enum OrderStatus {
     PENDING = 'PENDING',
     CONFIRMED = 'CONFIRMED',
     SHIPPED = 'SHIPPED',

@@ -1,18 +1,62 @@
 import { Controller, HttpStatus } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { ClientProxy, MessagePattern, Payload } from '@nestjs/microservices';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { FetchOrdersDTO } from './dto/fetch-orders.dto';
+import { InventoryService } from 'src/inventory/inventory.service';
+import { UpdateInventoryDto } from 'src/inventory/dto/update-inventory.dto';
 
 @Controller()
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) { }
+  constructor(
+    private readonly ordersService: OrdersService,
+    private readonly inventoryService: InventoryService
+  ) { }
 
   @MessagePattern('createOrder')
   async create(@Payload() createOrderDto: CreateOrderDto) {
-    const createdOrder =  await this.ordersService.create(createOrderDto);
-    if(createdOrder) {
+    console.log(createOrderDto);
+    
+
+    const orderItemsProductIds = createOrderDto.items.map((item) => item.productId)
+
+    const stockAvailability = await this.inventoryService.
+      checkBulkAvailability({ productIds: orderItemsProductIds, flatten: true })
+
+
+    const inventoryToUpdate = []
+    let totalAmount = 0
+    for (const orderItem of createOrderDto.items) {
+      const orderedStock = orderItem.quantity
+      const availableStock = stockAvailability[orderItem.productId]
+
+      const remainingStock = availableStock - orderedStock
+      totalAmount += orderItem.price
+
+      if (remainingStock < 0) {
+        return {
+          status: HttpStatus.CONFLICT,
+          data: null,
+          message: `Could not process your order for product ID ${orderItem.productId}. Insufficient stock available`
+        }
+      }
+
+      inventoryToUpdate.push({
+        productId: orderItem.productId,
+        stockQuantity: remainingStock
+      })
+    }
+
+    console.log('inventoryToUpdate', inventoryToUpdate)
+
+    createOrderDto.totalAmount = totalAmount
+
+    await this.inventoryService.bulkUpdateInventory(inventoryToUpdate)
+    const createdOrder = await this.ordersService.create(createOrderDto);
+    console.log('ssss', createdOrder)
+
+    if (createdOrder) {
       return {
         status: HttpStatus.CREATED,
         data: createdOrder
@@ -45,7 +89,7 @@ export class OrdersController {
 
   @MessagePattern('updateOrderStatus')
   async update(@Payload() updateOrderDto: UpdateOrderDto) {
-    console.log('up',updateOrderDto)
+    console.log('up', updateOrderDto)
     const updatedOrder = await this.ordersService.update(updateOrderDto.id, updateOrderDto);
     if (updatedOrder) return {
       status: HttpStatus.OK,
