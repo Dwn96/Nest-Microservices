@@ -10,7 +10,7 @@ export class OrdersService {
     async createOrder(createOrderDto: CreateOrderDto): Promise<any> {
         const order = await firstValueFrom(this.orderClient.send(
             'createOrder',
-            {createOrderDto}
+            createOrderDto
         ))
         return order;
     }

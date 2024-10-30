@@ -33,7 +33,6 @@ export class ProductsController {
 
   @MessagePattern('updateInventory')
   async updateInventory(@Payload() updateInventoryData: UpdateProductDto ) {
-    console.log(updateInventoryData)
     const {productId, ...rest } = updateInventoryData
     console.log(rest)
     const updatedProduct =  await this.productsService.updateInventory(productId, rest);
