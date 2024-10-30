@@ -42,8 +42,8 @@ export class OrdersService {
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto) {
-    await this.orderRepository.update({id}, updateOrderDto as any)
-    return this.findOne(id)
+    await this.orderRepository.update({id}, {status: updateOrderDto.status})
+    return await this.findOne(id)
   }
  
 }

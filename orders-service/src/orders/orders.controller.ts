@@ -24,12 +24,12 @@ export class OrdersController {
     }
   }
 
-  @MessagePattern('findAllOrders')
+  @MessagePattern('listOrders')
   async findAll(@Payload() fetchOrdersDto: FetchOrdersDTO) {
     return await this.ordersService.findAll(fetchOrdersDto.page, fetchOrdersDto.limit);
   }
 
-  @MessagePattern('findOneOrder')
+  @MessagePattern('getOrderDetails')
   async findOne(@Payload() id: number) {
     const order = await this.ordersService.findOne(id);
     if (order) return {
@@ -43,8 +43,9 @@ export class OrdersController {
     }
   }
 
-  @MessagePattern('updateOrder')
+  @MessagePattern('updateOrderStatus')
   async update(@Payload() updateOrderDto: UpdateOrderDto) {
+    console.log('up',updateOrderDto)
     const updatedOrder = await this.ordersService.update(updateOrderDto.id, updateOrderDto);
     if (updatedOrder) return {
       status: HttpStatus.OK,

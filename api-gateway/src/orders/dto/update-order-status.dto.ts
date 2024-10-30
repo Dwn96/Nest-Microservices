@@ -1,6 +1,12 @@
-import { IsString } from 'class-validator';
+import { IsEnum } from 'class-validator';
+enum OrderStatus {
+    PENDING = 'PENDING',
+    CONFIRMED = 'CONFIRMED',
+    SHIPPED = 'SHIPPED',
+    DELIVERED = 'DELIVERED',
+}
 
 export class UpdateOrderStatusDto {
-    @IsString()
-    status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED';
+    @IsEnum(OrderStatus)
+    status: OrderStatus;
 }

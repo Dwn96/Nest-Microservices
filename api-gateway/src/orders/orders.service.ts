@@ -18,7 +18,7 @@ export class OrdersService {
     async getOrderDetails(id: string): Promise<any> {
         const order = await firstValueFrom(this.orderClient.send(
             'getOrderDetails',
-            {id}
+            id
         ))
         return order;
     }
@@ -34,7 +34,7 @@ export class OrdersService {
     async updateOrderStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto): Promise<any> {
         const order = await firstValueFrom(this.orderClient.send(
             'updateOrderStatus',
-            {id, updateOrderStatusDto}
+            {id, ...updateOrderStatusDto}
         ))
         return order;
     }
