@@ -1,4 +1,4 @@
-import { Controller, HttpStatus } from '@nestjs/common';
+import { Controller, HttpStatus, Logger } from '@nestjs/common';
 import { ClientProxy, MessagePattern, Payload } from '@nestjs/microservices';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -14,13 +14,17 @@ export class OrdersController {
     private readonly inventoryService: InventoryService
   ) { }
 
+  private readonly logger = new Logger(OrdersController.name);
+
   @MessagePattern('createOrder')
-  async create(@Payload() createOrderDto: CreateOrderDto) {
+  async create(@Payload() createOrderDto: CreateOrderDto & {traceId:string}) {
+    this.logger.log(`[Trace ID: ${createOrderDto.traceId}] Received getOrderDetails request`, createOrderDto);    
 
     const orderItemsProductIds = createOrderDto.items.map((item) => item.productId)
 
-    const stockAvailability = await this.inventoryService.
-      checkBulkAvailability({ productIds: orderItemsProductIds, flatten: true })
+    const stockAvailability = await this
+      .inventoryService
+      .checkBulkAvailability({ productIds: orderItemsProductIds, flatten: true, traceId: createOrderDto.traceId })
 
 
     const inventoryToUpdate = []
@@ -49,7 +53,10 @@ export class OrdersController {
 
     createOrderDto.totalAmount = totalAmount
 
-    await this.inventoryService.bulkUpdateInventory(inventoryToUpdate)
+    console.log('toupdate', inventoryToUpdate);
+      
+
+    await this.inventoryService.bulkUpdateInventory(inventoryToUpdate, createOrderDto.traceId)
     const createdOrder = await this.ordersService.create(createOrderDto);
 
     if (createdOrder) {
@@ -65,12 +72,15 @@ export class OrdersController {
   }
 
   @MessagePattern('listOrders')
-  async findAll(@Payload() fetchOrdersDto: FetchOrdersDTO) {
+  async findAll(@Payload() fetchOrdersDto: FetchOrdersDTO & {traceId:string}) {
+    this.logger.log(`[Trace ID: ${fetchOrdersDto.traceId}] Received getOrderDetails request`, fetchOrdersDto);
     return await this.ordersService.findAll(fetchOrdersDto.page, fetchOrdersDto.limit);
   }
 
   @MessagePattern('getOrderDetails')
-  async findOne(@Payload() id: number) {
+  async findOne(@Payload() data: {id:number } & {traceId:string}) {
+    const {id, traceId } = data
+    this.logger.log(`[Trace ID: ${traceId}] Received getOrderDetails request`, data);
     const order = await this.ordersService.findOne(id);
     if (order) return {
       status: HttpStatus.OK,
@@ -84,7 +94,8 @@ export class OrdersController {
   }
 
   @MessagePattern('updateOrderStatus')
-  async update(@Payload() updateOrderDto: UpdateOrderDto) {
+  async update(@Payload() updateOrderDto: UpdateOrderDto & {traceId:string}) {
+    this.logger.log(`[Trace ID: ${updateOrderDto.traceId}] Received getOrderDetails request`, updateOrderDto);
     const updatedOrder = await this.ordersService.update(updateOrderDto.id, updateOrderDto);
     if (updatedOrder) return {
       status: HttpStatus.OK,

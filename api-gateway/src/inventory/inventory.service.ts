@@ -1,20 +1,27 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, Scope } from '@nestjs/common';
 import { CheckAvailabilityDto } from './dto/check-availability.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, of, catchError, delay, retry, throwError } from 'rxjs';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
+import { REQUEST } from '@nestjs/core';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class InventoryService {
-  constructor(@Inject('INVENTORY') private readonly inventoryClient: ClientProxy) {}
+  constructor(@Inject('INVENTORY') private readonly inventoryClient: ClientProxy,
+    @Inject(REQUEST) private readonly request: Request) { }
 
   private readonly MAX_RETRY_ATTEMPTS = 3;
   private readonly RETRY_DELAY = 2000;
 
+  private get traceId(): string {
+    return this.request.headers['x-trace-id'] as string;
+  }
+
+
   async getProductAvailability(productId: string): Promise<any> {
     return firstValueFrom(
-      this.inventoryClient.send('getProductAvailability', productId).pipe(
+      this.inventoryClient.send('getProductAvailability', {productId, traceId: this.traceId}).pipe(
         retry({
           count: this.MAX_RETRY_ATTEMPTS,
           delay: this.RETRY_DELAY,
@@ -29,7 +36,7 @@ export class InventoryService {
 
   async checkBulkAvailability(checkAvailabilityDto: CheckAvailabilityDto): Promise<any> {
     return firstValueFrom(
-      this.inventoryClient.send('checkBulkAvailability', checkAvailabilityDto).pipe(
+      this.inventoryClient.send('checkBulkAvailability', {...checkAvailabilityDto, traceId: this.traceId}).pipe(
         retry({
           count: this.MAX_RETRY_ATTEMPTS,
           delay: this.RETRY_DELAY,
@@ -44,7 +51,7 @@ export class InventoryService {
 
   async updateInventory(productId: string, updateInventoryDto: UpdateInventoryDto): Promise<any> {
     return firstValueFrom(
-      this.inventoryClient.send('updateInventory', { productId, ...updateInventoryDto }).pipe(
+      this.inventoryClient.send('updateInventory', { productId, ...updateInventoryDto, traceId: this.traceId }).pipe(
         retry({
           count: this.MAX_RETRY_ATTEMPTS,
           delay: this.RETRY_DELAY,
@@ -59,7 +66,7 @@ export class InventoryService {
 
   async createInventory(product: CreateInventoryDto): Promise<any> {
     return firstValueFrom(
-      this.inventoryClient.send('createInventory', product).pipe(
+      this.inventoryClient.send('createInventory', {...product, traceId: this.traceId}).pipe(
         retry({
           count: this.MAX_RETRY_ATTEMPTS,
           delay: this.RETRY_DELAY,

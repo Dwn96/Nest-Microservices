@@ -1,4 +1,4 @@
-import { Controller, HttpStatus, NotFoundException } from '@nestjs/common';
+import { Controller, HttpStatus, Logger } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -10,8 +10,12 @@ import { BulkCheckProductAvailabilities } from './dto/bulk-check-availability.dt
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
+  private readonly logger = new Logger(ProductsController.name);
+
   @MessagePattern('getProductAvailability')
-  async getProductAvailability(@Payload() productId: number) {
+  async getProductAvailability(@Payload() payload:{productId: number} & {traceId: string}) {
+    const { productId, traceId } = payload
+    this.logger.log(`[Trace ID: ${traceId}] Received getProductAvailability request`, payload);    
     const product = await this.productsService.getProductAvailability(productId);
     if (product) {
       const { id, stockQuantity } = product
@@ -28,13 +32,15 @@ export class ProductsController {
   }
 
   @MessagePattern('checkBulkAvailability')
-  async checkBulkAvailability(@Payload() bulkCheckProductAvailabilities: BulkCheckProductAvailabilities) {     
+  async checkBulkAvailability(@Payload() bulkCheckProductAvailabilities: BulkCheckProductAvailabilities & {traceId:string}) {  
+    this.logger.log(`[Trace ID: ${bulkCheckProductAvailabilities.traceId}] Received checkBulkAvailability request`, bulkCheckProductAvailabilities);       
     return await this.productsService.checkBulkAvailability(bulkCheckProductAvailabilities);
   }
 
   @MessagePattern('updateInventory')
-  async updateInventory(@Payload() updateInventoryData: UpdateProductDto ) {
-    const {productId, ...rest } = updateInventoryData
+  async updateInventory(@Payload() updateInventoryData: UpdateProductDto & {traceId:string}) {
+    const {productId, traceId, ...rest } = updateInventoryData
+    this.logger.log(`[Trace ID: ${traceId}] Received updateInventory request`, updateInventoryData);    
     const updatedProduct =  await this.productsService.updateInventory(productId, rest);
     if (updatedProduct) {
       return {
@@ -49,12 +55,14 @@ export class ProductsController {
   }
 
   @MessagePattern('createInventory')
-  async createInventory(@Payload() product: CreateProductDto) {
+  async createInventory(@Payload() product: CreateProductDto & {traceId:string}) {
+    this.logger.log(`[Trace ID: ${product.traceId}] Received createInventory request`, product);    
     return await this.productsService.createProduct(product);
   }
 
   @MessagePattern('bulkUpdateInventory')
-  async bulkUpdateInventory(@Payload() update: UpdateProductDto[]) {
-    return await this.productsService.bulkUpdateInventory(update)
+  async bulkUpdateInventory(@Payload() data: {updateInventoryDto: UpdateProductDto[]} & {traceId:string}) {
+    this.logger.log(`[Trace ID: ${data.traceId}] Received bulkUpdateInventory request`, data);    
+    return await this.productsService.bulkUpdateInventory(data.updateInventoryDto)
   }
 }

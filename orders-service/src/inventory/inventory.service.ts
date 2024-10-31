@@ -11,7 +11,7 @@ export class InventoryService {
   private readonly MAX_RETRY_ATTEMPTS = 3;
   private readonly RETRY_DELAY = 2000; // 2 seconds
 
-  async checkBulkAvailability(checkAvailabilityDto: CheckAvailabilityDto): Promise<any> {
+  async checkBulkAvailability(checkAvailabilityDto: CheckAvailabilityDto & {traceId?: string }): Promise<any> {
     return firstValueFrom(
       this.inventoryClient.send('checkBulkAvailability', checkAvailabilityDto).pipe(
         retry({
@@ -26,7 +26,7 @@ export class InventoryService {
     );
   }
 
-  async updateInventory(productId: string, updateInventoryDto: UpdateInventoryDto): Promise<any> {
+  async updateInventory(productId: string, updateInventoryDto: UpdateInventoryDto & {traceId?: string }): Promise<any> {
     return firstValueFrom(
       this.inventoryClient.send('updateInventory', { productId, ...updateInventoryDto }).pipe(
         retry({
@@ -41,9 +41,9 @@ export class InventoryService {
     );
   }
 
-  async bulkUpdateInventory(updateInventoryDto: UpdateInventoryDto[]): Promise<any> {
+  async bulkUpdateInventory(updateInventoryDto: UpdateInventoryDto[], traceId: string ): Promise<any> {
     return firstValueFrom(
-      this.inventoryClient.send('bulkUpdateInventory', updateInventoryDto).pipe(
+      this.inventoryClient.send('bulkUpdateInventory', {updateInventoryDto, traceId }).pipe(
         retry({
           count: this.MAX_RETRY_ATTEMPTS,
           delay: this.RETRY_DELAY,
