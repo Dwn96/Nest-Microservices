@@ -38,9 +38,9 @@ export class CreateOrderDto {
     @IsNumber()
     @Min(1)
     @IsOptional()
-    totalAmount: number;
+    totalAmount?: number;
 
     @IsEnum(OrderStatus)
     @IsOptional()
-    status: OrderStatus;
+    status?: OrderStatus;
 }

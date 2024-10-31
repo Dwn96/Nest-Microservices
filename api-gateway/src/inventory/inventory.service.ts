@@ -11,8 +11,8 @@ export class InventoryService {
   constructor(@Inject('INVENTORY') private readonly inventoryClient: ClientProxy,
     @Inject(REQUEST) private readonly request: Request) { }
 
-  private readonly MAX_RETRY_ATTEMPTS = 3;
-  private readonly RETRY_DELAY = 2000;
+  private MAX_RETRY_ATTEMPTS = 3;
+  private RETRY_DELAY = 2000;
 
   private get traceId(): string {
     return this.request.headers['x-trace-id'] as string;
