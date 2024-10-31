@@ -28,16 +28,13 @@ export class ProductsController {
   }
 
   @MessagePattern('checkBulkAvailability')
-  async checkBulkAvailability(@Payload() bulkCheckProductAvailabilities: BulkCheckProductAvailabilities) {
-    console.log('kk');
-     
+  async checkBulkAvailability(@Payload() bulkCheckProductAvailabilities: BulkCheckProductAvailabilities) {     
     return await this.productsService.checkBulkAvailability(bulkCheckProductAvailabilities);
   }
 
   @MessagePattern('updateInventory')
   async updateInventory(@Payload() updateInventoryData: UpdateProductDto ) {
     const {productId, ...rest } = updateInventoryData
-    console.log(rest)
     const updatedProduct =  await this.productsService.updateInventory(productId, rest);
     if (updatedProduct) {
       return {
@@ -58,7 +55,6 @@ export class ProductsController {
 
   @MessagePattern('bulkUpdateInventory')
   async bulkUpdateInventory(@Payload() update: UpdateProductDto[]) {
-    console.log(update)
     return await this.productsService.bulkUpdateInventory(update)
   }
 }

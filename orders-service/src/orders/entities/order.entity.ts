@@ -20,7 +20,7 @@ export class Order {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Customer, (customer) => customer.orders, { eager: true })
+    @ManyToOne(() => Customer, (customer) => customer.orders, {cascade: ['insert']})
     customer: Customer;
 
     @Column('json')

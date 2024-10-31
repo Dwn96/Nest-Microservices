@@ -15,6 +15,6 @@ export class Customer {
     @Column()
     shippingAddress: string;
 
-    @OneToMany(() => Order, (order) => order.customer)
+    @OneToMany(() => Order, (order) => order.customer, {cascade: ["insert", "update", "remove"]})
     orders: Order[];
 }

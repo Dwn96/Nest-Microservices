@@ -7,7 +7,6 @@ export class AppService {
   }
 
   handleUserCreated(user, ctx) {
-    console.log(user, ctx)
     return {
       success: true,
       well: 'received'

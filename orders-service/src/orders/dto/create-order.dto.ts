@@ -7,18 +7,20 @@ import {
     Min,
     ValidateNested,
     IsNumber,
-    IsEnum
+    IsEnum,
+    IsOptional
 } from "class-validator";
 import { Type } from 'class-transformer';
 
 class OrderItem {
     @IsUUID("all")
-    productId: string;
+    productId: number;
 
     @Min(1)
     quantity: number;
 
-    @Min(1)
+    @Min(0)
+    @IsOptional()
     price: number;
 }
 
@@ -31,9 +33,6 @@ class Customer {
 
     @IsString()
     shippingAddress: string;
-
-    @Min(1)
-    price: number;
 }
 
 enum OrderStatus {

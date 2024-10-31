@@ -3,8 +3,7 @@ import { ArrayNotEmpty, IsArray, IsBoolean, IsNumber, IsOptional, IsUUID } from 
 export class CheckAvailabilityDto {
     @IsArray()
     @ArrayNotEmpty()
-    @IsUUID("4", { each: true })
-    productIds: string[];
+    productIds: number[];
 
     @IsBoolean()
     @IsOptional()

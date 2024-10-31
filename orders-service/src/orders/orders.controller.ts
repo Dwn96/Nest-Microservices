@@ -16,8 +16,6 @@ export class OrdersController {
 
   @MessagePattern('createOrder')
   async create(@Payload() createOrderDto: CreateOrderDto) {
-    console.log(createOrderDto);
-    
 
     const orderItemsProductIds = createOrderDto.items.map((item) => item.productId)
 
@@ -29,10 +27,11 @@ export class OrdersController {
     let totalAmount = 0
     for (const orderItem of createOrderDto.items) {
       const orderedStock = orderItem.quantity
-      const availableStock = stockAvailability[orderItem.productId]
+      const {stockQuantity:availableStock, price} = stockAvailability[orderItem.productId]
 
       const remainingStock = availableStock - orderedStock
-      totalAmount += orderItem.price
+      totalAmount += (price * orderedStock)
+      orderItem.price = price
 
       if (remainingStock < 0) {
         return {
@@ -48,13 +47,10 @@ export class OrdersController {
       })
     }
 
-    console.log('inventoryToUpdate', inventoryToUpdate)
-
     createOrderDto.totalAmount = totalAmount
 
     await this.inventoryService.bulkUpdateInventory(inventoryToUpdate)
     const createdOrder = await this.ordersService.create(createOrderDto);
-    console.log('ssss', createdOrder)
 
     if (createdOrder) {
       return {
@@ -89,7 +85,6 @@ export class OrdersController {
 
   @MessagePattern('updateOrderStatus')
   async update(@Payload() updateOrderDto: UpdateOrderDto) {
-    console.log('up', updateOrderDto)
     const updatedOrder = await this.ordersService.update(updateOrderDto.id, updateOrderDto);
     if (updatedOrder) return {
       status: HttpStatus.OK,

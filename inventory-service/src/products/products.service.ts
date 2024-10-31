@@ -23,20 +23,23 @@ export class ProductsService {
   }
 
   async checkBulkAvailability(bulkCheckProductAvailabilities: BulkCheckProductAvailabilities) {
-    console.log(bulkCheckProductAvailabilities)
     const {productIds, flatten} = bulkCheckProductAvailabilities
     const products = await this.productRepository.find({
       where: {
         id: In(productIds)
       },
-      select: ['id', 'stockQuantity']
+      select: ['id', 'stockQuantity', 'price']
     })
     if (flatten) {
       // Transform the result into a map with product IDs as keys and quantities as values
+      console.log('product', products)
       return products.reduce((acc, product) => {
-        acc[product.id] = product.stockQuantity;
+        acc[product.id] = {
+          stockQuantity: product.stockQuantity,
+          price: Number(product.price)
+        }
         return acc;
-      }, {} as Record<string, number>);
+      }, {} as Record<string, {}>);
     }
     return products;
   }
@@ -51,9 +54,6 @@ export class ProductsService {
 
     const ids = updates.map(update => update.productId);
     const quantities = updates.map(update => update.stockQuantity);
-
-    console.log('ids', ids, 'qs', quantities)
-
     await queryBuilder
         .update(Product)
         .set({

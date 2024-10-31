@@ -11,8 +11,7 @@ export class OrdersService {
     @InjectRepository(Order) private orderRepository:Repository<Order>
   ){}
   async create(createOrderDto: CreateOrderDto) {
-    console.log(createOrderDto)
-    return await this.orderRepository.save(createOrderDto as any)
+    return await this.orderRepository.save(createOrderDto)
   }
 
   async findAll(page: number, limit: number) {
@@ -22,6 +21,7 @@ export class OrdersService {
       order: {
         createdAt: 'DESC',
       },
+      relations: ['customer']
     });
 
     return {
@@ -37,7 +37,8 @@ export class OrdersService {
     return await this.orderRepository.findOne({
       where: {
         id
-      }
+      },
+      relations: ['customer']
     })
   }
 

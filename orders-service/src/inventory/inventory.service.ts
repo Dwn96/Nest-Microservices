@@ -26,8 +26,6 @@ export class InventoryService {
     }
 
     async bulkUpdateInventory(updateInventoryDto: UpdateInventoryDto[]): Promise<any> {
-        console.log('send');
-        
         const inventory = await firstValueFrom(this.inventoryClient.send(
             'bulkUpdateInventory',
             updateInventoryDto

@@ -3,16 +3,13 @@ import { Type } from 'class-transformer';
 import { OrderStatus } from './update-order-status.dto';
 
 class OrderItem {
-    @IsString()
-    productId: string;
+    @IsNumber()
+    @Min(1)
+    productId: number;
 
     @IsNumber()
     @Min(1)
     quantity: number;
-
-    @IsNumber()
-    @Min(1)
-    price: number;
 }
 
 class Customer {
