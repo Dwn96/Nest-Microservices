@@ -1,6 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { OrdersController } from './orders/orders.controller';
 import { OrdersService } from './orders/orders.service';
@@ -29,8 +27,8 @@ import { TracingMiddleware } from './middleware/tracing.middleware';
       }
     ])
   ],
-  controllers: [AppController, OrdersController, InventoryController],
-  providers: [AppService, OrdersService, InventoryService],
+  controllers: [OrdersController, InventoryController],
+  providers: [OrdersService, InventoryService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
