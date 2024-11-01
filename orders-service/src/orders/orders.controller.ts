@@ -4,8 +4,7 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { FetchOrdersDTO } from './dto/fetch-orders.dto';
-import { InventoryService } from 'src/inventory/inventory.service';
-import { UpdateInventoryDto } from 'src/inventory/dto/update-inventory.dto';
+import { InventoryService } from '../inventory/inventory.service';
 
 @Controller()
 export class OrdersController {
@@ -57,7 +56,8 @@ export class OrdersController {
       
 
     await this.inventoryService.bulkUpdateInventory(inventoryToUpdate, createOrderDto.traceId)
-    const createdOrder = await this.ordersService.create(createOrderDto);
+    delete createOrderDto.traceId
+    const createdOrder  = await this.ordersService.create(createOrderDto);
 
     if (createdOrder) {
       return {

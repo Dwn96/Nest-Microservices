@@ -21,7 +21,7 @@ class OrderItem {
 
     @Min(0)
     @IsOptional()
-    price: number;
+    price?: number;
 }
 
 class Customer {
@@ -55,8 +55,8 @@ export class CreateOrderDto {
 
     @IsNumber()
     @Min(1)
-    totalAmount: number;
+    totalAmount?: number;
 
     @IsEnum(OrderStatus)
-    status: OrderStatus;
+    status?: OrderStatus;
 }

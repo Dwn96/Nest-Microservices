@@ -8,8 +8,8 @@ import { firstValueFrom, retry, catchError, delay, throwError } from 'rxjs';
 export class InventoryService {
   constructor(@Inject('INVENTORY') private readonly inventoryClient: ClientProxy) {}
 
-  private readonly MAX_RETRY_ATTEMPTS = 3;
-  private readonly RETRY_DELAY = 2000; // 2 seconds
+  private MAX_RETRY_ATTEMPTS = 3;
+  private RETRY_DELAY = 2000; // 2 seconds
 
   async checkBulkAvailability(checkAvailabilityDto: CheckAvailabilityDto & {traceId?: string }): Promise<any> {
     return firstValueFrom(
