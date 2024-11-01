@@ -5,14 +5,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { InventoryService } from 'src/inventory/inventory.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order]),   ClientsModule.register([
+  imports: [
+    ConfigModule.forRoot({isGlobal: true}),  
+    TypeOrmModule.forFeature([Order]),   
+    ClientsModule.register([
     {
       name: 'INVENTORY',
       transport: Transport.REDIS,
       options: {
-        host: 'localhost',
+        host: process.env.REDIS_HOST,
         port: 6379,
       }
     }

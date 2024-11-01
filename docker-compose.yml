@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - REDIS_HOST=redis  
+
+  orders-service:
+    build:
+      context: ./orders-service
+    env_file:
+      - ./orders-service/.env
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - REDIS_HOST=redis 
+
+  inventory-service:
+    build:
+      context: ./inventory-service
+    env_file:
+      - ./inventory-service/.env
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - REDIS_HOST=redis 
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+
+  redis:
+    image: redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    command: ["redis-server", "--bind", "redis", "--port", "6379"]
+    ports:
+      - '6379:6379'
+volumes:
+  postgres_data:

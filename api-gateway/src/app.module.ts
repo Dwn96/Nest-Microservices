@@ -5,15 +5,21 @@ import { OrdersService } from './orders/orders.service';
 import { InventoryController } from './inventory/inventory.controller';
 import { InventoryService } from './inventory/inventory.service';
 import { TracingMiddleware } from './middleware/tracing.middleware';
+import { ConfigModule } from '@nestjs/config';
+
+
 
 @Module({
-  imports: [
+  imports: [    
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
     ClientsModule.register([
       {
         name: 'ORDER',
         transport: Transport.REDIS,
         options: {
-          host: 'localhost',
+          host: process.env.REDIS_HOST,
           port: 6379,
         }
       },
@@ -21,7 +27,7 @@ import { TracingMiddleware } from './middleware/tracing.middleware';
         name: 'INVENTORY',
         transport: Transport.REDIS,
         options: {
-          host: 'localhost',
+          host: process.env.REDIS_HOST,
           port: 6379,
         }
       }
