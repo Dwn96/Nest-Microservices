@@ -65,8 +65,9 @@ export class OrdersService {
   }
 
   async updateOrderStatus(id: string, updateOrderStatusDto: UpdateOrderStatusDto): Promise<any> {
-    return firstValueFrom(
-      this.orderClient.send('updateOrderStatus', { id, ...updateOrderStatusDto, traceId: this.traceId  }).pipe(
+    // Update the order status
+    const result = await firstValueFrom(
+      this.orderClient.send('updateOrderStatus', { id, ...updateOrderStatusDto, traceId: this.traceId }).pipe(
         retry({
           count: this.MAX_RETRY_ATTEMPTS,
           delay: this.RETRY_DELAY,
@@ -77,5 +78,9 @@ export class OrdersService {
         })
       )
     );
+
+    // Emit the status change event after updating the status
+    this.orderClient.emit('orderStatusChanged', { id, ...updateOrderStatusDto, traceId: this.traceId });
+    return result;
   }
 }
