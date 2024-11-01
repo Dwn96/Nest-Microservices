@@ -1,0 +1,231 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Inventory and Orders API",
+      "version": "1.0.0",
+      "description": "API for managing inventory and orders."
+    },
+    "paths": {
+      "/api/inventory": {
+        "post": {
+          "summary": "Create inventory",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "description": { "type": "string" },
+                    "price": { "type": "number" },
+                    "stockQuantity": { "type": "integer" },
+                    "imageUrl": { "type": "string", "format": "uri" }
+                  },
+                  "required": ["name", "price", "stockQuantity"]
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "Inventory created successfully"
+              },
+              "400": {
+                "description": "Invalid input"
+              }
+            }
+          }
+        },
+        "get": {
+          "summary": "Get product availability",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Product availability retrieved successfully"
+            },
+            "404": {
+              "description": "Product not found"
+            }
+          }
+        },
+        "patch": {
+          "summary": "Patch inventory",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "price": { "type": "number" },
+                    "stockQuantity": { "type": "integer" }
+                  },
+                  "required": ["price", "stockQuantity"]
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Inventory updated successfully"
+              },
+              "404": {
+                "description": "Inventory not found"
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Bulk check product availability",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "productIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "required": ["productIds"]
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Availability checked successfully"
+              },
+              "400": {
+                "description": "Invalid input"
+              }
+            }
+          }
+        }
+      },
+      "/api/orders": {
+        "post": {
+          "summary": "Create order",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "customer": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "email": { "type": "string", "format": "email" },
+                        "shippingAddress": { "type": "string" }
+                      },
+                      "required": ["name", "email", "shippingAddress"]
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "productId": { "type": "integer" },
+                          "quantity": { "type": "integer" }
+                        },
+                        "required": ["productId", "quantity"]
+                      }
+                    }
+                  },
+                  "required": ["customer", "items"]
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "Order created successfully"
+              },
+              "400": {
+                "description": "Invalid input"
+              }
+            }
+          }
+        },
+        "get": {
+          "summary": "Get order details",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Order details retrieved successfully"
+            },
+            "404": {
+              "description": "Order not found"
+            }
+          }
+        },
+        "patch": {
+          "summary": "PATCH order status",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" }
+                  },
+                  "required": ["status"]
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Order status updated successfully"
+              },
+              "404": {
+                "description": "Order not found"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

@@ -2,7 +2,7 @@
 # Application Documentation
 
 This application is structured as a microservices architecture, consisting of three core components:
-![diagram](diagram-export-11-1-2024-8_10_27-PM.png)
+![diagram](diagram.png)
 
 1. **API Gateway**: The main entry point for client requests, responsible for routing to the appropriate services.
 2. **Orders Microservice**: Manages order creation, processing, and coordination with inventory.
@@ -24,3 +24,6 @@ Then execute the script to run all tests:
 ```bash
 ./runtests.sh
 ```
+
+### 3. API Endpoints
+To view the API documentation, navigate to http://localhost:3000/api-docs/.
